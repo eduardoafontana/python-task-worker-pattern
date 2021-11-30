@@ -14,16 +14,20 @@ def progress_method(message):
 def finished_method(data):
     print('Finished in app. Data: ' + data.data)
 
-task = DomainService.get_task_worker()
+def datachange_method(data):
+    print('Data changed in app. Data: ' + data.data)
+
+#calling until finish the quantity
+
+task = DomainService.get_task_worker(30)
 task.assign_start_callback(start_method)
 task.assign_cancel_callback(cancel_method)
 task.assign_progress_callback(progress_method)
 task.assign_finished_callback(finished_method)
+task.assign_datachange_callback(datachange_method)
 
 task.start()
 
 print('started main waiting')
 time.sleep(3)
 print('finished main waiting')
-
-task.cancel()

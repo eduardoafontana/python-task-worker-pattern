@@ -5,10 +5,10 @@ from task import DomainTask
 class DomainService:
 
     @staticmethod
-    def get_task_worker():
+    def get_task_worker(quantity = None):
 
         domain_obj = DomainClass()
-        domain_obj.set_quantity(30)
+        domain_obj.set_quantity(quantity)
 
         task = DomainTask(domain_obj)
 

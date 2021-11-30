@@ -3,8 +3,8 @@ import threading
 import time
 
 class TaskData:
-    def __init__(self):
-        self.data = 'data'
+    def __init__(self, value):
+        self.data = value
 
 class DomainTask:
 
@@ -16,6 +16,7 @@ class DomainTask:
         self.cancel_callback = None
         self.progress_callback = None
         self.finished_callback = None
+        self.datachange_callback = None
 
     def start(self):
         self.executing = True
@@ -26,13 +27,19 @@ class DomainTask:
 
     def _execute(self):
         count = 0
-        while self.executing and count < self.domain_object.quantity:
+        while self.executing and ((self.domain_object.quantity and count < self.domain_object.quantity) or not self.domain_object.quantity):
             count = count + 1
             if self.progress_callback: self.progress_callback('Executing... count: ' + str(count))
+
+            if count % 10 == 0:
+                if self.datachange_callback: 
+                    task_data = TaskData('data changed value: ' + str(count))
+                    self.datachange_callback(task_data)
+
             time.sleep(0.2)
 
         if not self.cancelled:
-            task_data = TaskData()
+            task_data = TaskData('data fisnished value')
             if self.finished_callback: self.finished_callback(task_data)
 
     def cancel(self):
@@ -51,3 +58,6 @@ class DomainTask:
 
     def assign_finished_callback(self, callback_method):
         self.finished_callback = callback_method
+
+    def assign_datachange_callback(self, callback_method):
+        self.datachange_callback = callback_method
